@@ -6,7 +6,7 @@ import { BudgetsControl } from './components/BudgetsControl';
 import { CurrentAccount } from './components/CurrentAccount';
 import { GoogleDriveBridge } from './components/GoogleDriveBridge';
 import { AccountingDocument, GoogleDriveConfig, Sphere, Budget } from './types';
-import { Layout, Scale, Share2, Bell, Loader2, RefreshCw, BarChart3, Wallet, Cloud, Users, CheckCircle2, Wifi, WifiOff } from 'lucide-react';
+import { Layout, Scale, Share2, Bell, Loader2, RefreshCw, BarChart3, Wallet, Users, CheckCircle2, Wifi, WifiOff } from 'lucide-react';
 
 const DB_FILENAME = 'balancemaster_control_db.json';
 
@@ -74,7 +74,6 @@ const App: React.FC = () => {
     const savedSync = localStorage.getItem('balancemaster_last_sync');
     if (savedSync) setLastSyncTime(parseInt(savedSync));
 
-    // Auto-refresh on mount if configured
     if (gdConfig.isEnabled && gdConfig.accessToken) {
       fetchFromCloud();
     }
@@ -159,14 +158,14 @@ const App: React.FC = () => {
           </header>
 
           <div className="animate-in fade-in duration-1000 slide-in-from-bottom-4">
-            {view === 'dashboard' && <Dashboard documents={documents} budgets={budgets} onImport={imported => {
+            {view === 'dashboard' && <Dashboard documents={documents} budgets={budgets} onImport={(imported: AccountingDocument[]) => {
                 setDocuments(prev => [...imported, ...prev]);
                 setNotification({message: "Dados importados. Não se esqueça de sincronizar com a Cloud.", type: 'info'});
             }} />}
             {view === 'budgets' && <BudgetsControl budgets={budgets} onUpdate={setBudgets} />}
             {view === 'account' && <CurrentAccount documents={documents} />}
             {view === 'iva' && <IVAControl documents={documents.filter(d => d.sphere === Sphere.COMPANY)} />}
-            {view === 'connections' && <GoogleDriveBridge config={gdConfig} onUpdate={(newConfig) => {
+            {view === 'connections' && <GoogleDriveBridge config={gdConfig} onUpdate={(newConfig: GoogleDriveConfig) => {
               setGdConfig(newConfig);
               if (newConfig.isEnabled && newConfig.accessToken) fetchFromCloud(newConfig);
             }} />}
