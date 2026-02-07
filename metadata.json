@@ -1,0 +1,8 @@
+
+{
+  "name": "BalanceMaster - Controlo Financeiro",
+  "description": "Plataforma avançada de BI para controlo de budgets, fiscalidade e gestão de despesas consolidadas.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
