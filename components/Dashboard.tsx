@@ -1,6 +1,6 @@
 
 import React, { useState, useMemo } from 'react';
-import { Search, ChevronLeft, ChevronRight, Briefcase, User, UploadCloud, BarChart3, TrendingUp, Wallet, Target, Activity, Calendar, ArrowRightLeft } from 'lucide-react';
+import { Search, ChevronLeft, ChevronRight, Briefcase, User, UploadCloud, BarChart3, TrendingUp, Wallet, Target, Activity, Calendar, ArrowRightLeft, FileText } from 'lucide-react';
 import { AccountingDocument, Sphere, Budget, Payer } from '../types';
 
 interface DashboardProps {
@@ -74,32 +74,32 @@ export const Dashboard: React.FC<DashboardProps> = ({ documents, budgets, onImpo
           <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300" size={20}/>
           <input 
             type="text" 
-            placeholder="Filtrar lançamentos..." 
+            placeholder="Procurar fornecedor ou categoria..." 
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             className="w-full pl-16 pr-8 py-5 bg-white border border-slate-100 rounded-[28px] text-sm font-bold shadow-sm outline-none focus:ring-4 focus:ring-indigo-500/5 transition-all"
           />
         </div>
-        <button onClick={handleImport} className="bg-slate-900 text-white px-8 py-5 rounded-[28px] font-black text-xs uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-indigo-600 transition-all shadow-xl shadow-slate-200/50">
-          <UploadCloud size={18}/> Update Manual
+        <button onClick={handleImport} className="bg-white text-slate-400 px-8 py-5 rounded-[28px] font-black text-xs uppercase tracking-widest border border-slate-100 flex items-center justify-center gap-3 hover:bg-slate-50 transition-all">
+          <UploadCloud size={18}/> Importar JSON
         </button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="bg-white p-8 rounded-[40px] shadow-xl shadow-slate-200/40 border border-slate-50 group hover:-translate-y-1 transition-all">
-          <p className="text-[10px] font-black uppercase tracking-[0.25em] text-slate-400 mb-2">Despesa Empresa</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.25em] text-slate-400 mb-2">Empresa</p>
           <h3 className="text-3xl font-black text-slate-900 tracking-tighter">€{stats.company.toLocaleString('pt-PT', { minimumFractionDigits: 2 })}</h3>
         </div>
         <div className="bg-white p-8 rounded-[40px] shadow-xl shadow-slate-200/40 border border-slate-50 group hover:-translate-y-1 transition-all">
-          <p className="text-[10px] font-black uppercase tracking-[0.25em] text-slate-400 mb-2">Despesa Pessoal</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.25em] text-slate-400 mb-2">Pessoal</p>
           <h3 className="text-3xl font-black text-slate-900 tracking-tighter">€{stats.personal.toLocaleString('pt-PT', { minimumFractionDigits: 2 })}</h3>
         </div>
         <div className="bg-indigo-50 p-8 rounded-[40px] border border-indigo-100 group hover:-translate-y-1 transition-all">
-          <p className="text-[10px] font-black uppercase tracking-[0.25em] text-indigo-600 mb-2">Pelo Sócio</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.25em] text-indigo-600 mb-2">Conta Corrente Sócio</p>
           <h3 className="text-3xl font-black text-indigo-900 tracking-tighter">€{stats.managerPaid.toLocaleString('pt-PT', { minimumFractionDigits: 2 })}</h3>
         </div>
         <div className="bg-slate-900 p-8 rounded-[40px] text-white shadow-2xl relative group hover:-translate-y-1 transition-all">
-          <p className="text-[10px] font-black uppercase tracking-[0.25em] opacity-40 mb-2">Burn Consolidado</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.25em] opacity-40 mb-2">Consumo Total</p>
           <h3 className="text-3xl font-black tracking-tighter">€{stats.total.toLocaleString('pt-PT', { minimumFractionDigits: 2 })}</h3>
         </div>
       </div>
@@ -110,7 +110,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ documents, budgets, onImpo
                <h4 className="text-xl font-black text-slate-900 flex items-center gap-3"><Target size={22} className="text-indigo-600"/> Budget Intelligence</h4>
             </div>
             <div className="space-y-8">
-               {budgetPerformance.map(bp => {
+               {budgetPerformance.length > 0 ? budgetPerformance.map(bp => {
                  const percentage = Math.min((bp.spent / bp.amount) * 100, 100);
                  const isHigh = percentage > 85;
                  return (
@@ -127,28 +127,43 @@ export const Dashboard: React.FC<DashboardProps> = ({ documents, budgets, onImpo
                       </div>
                    </div>
                  )
-               })}
+               }) : (
+                 <div className="py-20 text-center text-slate-300 font-bold uppercase text-[10px] tracking-widest border-2 border-dashed border-slate-50 rounded-3xl">
+                    Sem orçamentos definidos para este mês
+                 </div>
+               )}
             </div>
          </div>
 
-         <div className="bg-slate-900 rounded-[48px] p-10 text-white flex flex-col justify-between relative overflow-hidden">
-            <div className="relative z-10">
-               <h4 className="text-lg font-black mb-6 uppercase tracking-widest flex items-center gap-2"><Calendar size={20}/> Pipeline</h4>
-               <div className="space-y-6">
-                  {filteredDocs.slice(0, 6).map(doc => (
-                    <div key={doc.id} className="flex items-start gap-4">
-                       <div className={`w-2 h-2 rounded-full mt-2 shrink-0 ${doc.sphere === Sphere.COMPANY ? 'bg-indigo-400' : 'bg-amber-400'}`}></div>
-                       <div className="flex-1">
-                          <p className="text-sm font-black leading-none mb-1 line-clamp-1">{doc.supplier}</p>
-                          <p className="text-[9px] font-bold opacity-40 uppercase">€{doc.totalAmount.toFixed(2)} • {doc.category}</p>
-                       </div>
+         <div className="bg-white rounded-[48px] p-10 border border-slate-100 flex flex-col relative overflow-hidden">
+            <h4 className="text-lg font-black mb-6 uppercase tracking-widest flex items-center gap-2"><History className="text-indigo-600" size={20}/> Últimos Movimentos</h4>
+            <div className="space-y-6 flex-1">
+               {filteredDocs.length > 0 ? filteredDocs.slice(0, 6).map(doc => (
+                 <div key={doc.id} className="flex items-center gap-4 group">
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${doc.sphere === Sphere.COMPANY ? 'bg-indigo-50 text-indigo-600' : 'bg-amber-50 text-amber-500'}`}>
+                       {doc.sphere === Sphere.COMPANY ? <Briefcase size={18}/> : <User size={18}/>}
                     </div>
-                  ))}
-               </div>
+                    <div className="flex-1 overflow-hidden">
+                       <p className="text-sm font-black text-slate-900 truncate">{doc.supplier}</p>
+                       <p className="text-[9px] font-bold text-slate-400 uppercase">{doc.category}</p>
+                    </div>
+                    <div className="text-right">
+                       <p className="text-sm font-black text-slate-900">€{doc.totalAmount.toFixed(2)}</p>
+                    </div>
+                 </div>
+               )) : (
+                 <div className="flex-1 flex flex-col items-center justify-center text-slate-200">
+                    <FileText size={48} className="mb-4 opacity-20"/>
+                    <p className="text-[9px] font-black uppercase tracking-widest">Sem registos</p>
+                 </div>
+               )}
             </div>
-            <Activity className="absolute -bottom-10 -right-10 text-white/5" size={240}/>
          </div>
       </div>
     </div>
   );
 };
+
+const History = ({ className, size }: { className?: string, size?: number }) => (
+  <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
+);
