@@ -96,7 +96,7 @@ const App: React.FC = () => {
         </div>
       )}
 
-      {/* Modern Desktop Sidebar */}
+      {/* Sidebar Desktop */}
       <aside className="hidden md:flex w-80 bg-white flex-col p-10 fixed inset-y-0 left-0 z-50 border-r border-slate-100">
         <div className="flex items-center gap-4 mb-16">
           <div className="w-12 h-12 bg-gradient-to-br from-indigo-600 to-violet-700 rounded-2xl flex items-center justify-center shadow-xl shadow-indigo-200 text-white rotate-3">
@@ -150,17 +150,12 @@ const App: React.FC = () => {
                    {view === 'dashboard' ? 'Dashboard' : view === 'iva' ? 'Fiscalidade' : view === 'budgets' ? 'Budgets' : view === 'account' ? 'Sócio' : 'Conetividade'}
                 </h1>
              </div>
-             <div className="hidden md:block">
-                <div className="w-14 h-14 bg-white rounded-2xl border border-slate-100 flex items-center justify-center text-slate-300 shadow-sm">
-                   <Bell size={20}/>
-                </div>
-             </div>
           </header>
 
           <div className="animate-in fade-in duration-1000 slide-in-from-bottom-4">
             {view === 'dashboard' && <Dashboard documents={documents} budgets={budgets} onImport={(imported: AccountingDocument[]) => {
                 setDocuments(prev => [...imported, ...prev]);
-                setNotification({message: "Dados importados. Não se esqueça de sincronizar com a Cloud.", type: 'info'});
+                setNotification({message: "Dados importados.", type: 'info'});
             }} />}
             {view === 'budgets' && <BudgetsControl budgets={budgets} onUpdate={setBudgets} />}
             {view === 'account' && <CurrentAccount documents={documents} />}
@@ -173,7 +168,7 @@ const App: React.FC = () => {
         </div>
       </main>
 
-      {/* Enhanced Mobile Navigation */}
+      {/* Mobile Nav */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-3xl border-t border-slate-100 flex justify-around p-5 pb-10 z-[100] shadow-[0_-20px_50px_rgba(0,0,0,0.08)]">
         <button onClick={() => setView('dashboard')} className={`p-4 rounded-[20px] transition-all ${view === 'dashboard' ? 'bg-slate-900 text-white shadow-xl scale-110' : 'text-slate-400'}`}><Layout size={22}/></button>
         <button onClick={() => setView('budgets')} className={`p-4 rounded-[20px] transition-all ${view === 'budgets' ? 'bg-slate-900 text-white shadow-xl scale-110' : 'text-slate-400'}`}><Wallet size={22}/></button>

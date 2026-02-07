@@ -14,14 +14,10 @@ export const GoogleDriveBridge: React.FC<GoogleDriveBridgeProps> = ({ config, on
   
   const isIAEnabled = !!process.env.API_KEY && process.env.API_KEY !== 'undefined';
   
-  // COLA AQUI O TEU CLIENT ID GERADO NO PASSO 4
-  const GOOGLE_CLIENT_ID = '685167389178-v6q8m86b9re379105h8h6v2v6h6v2v6h.apps.googleusercontent.com';
+  // O seu Client ID oficial
+  const GOOGLE_CLIENT_ID = '289040581308-90dn58t81jcg0n6a612ubaf0ccugsicv.apps.googleusercontent.com';
 
   const handleConnect = () => {
-    if (GOOGLE_CLIENT_ID.includes('v6q8m86b9re3')) {
-      alert("Atenção: Ainda estás a usar o Client ID de exemplo. Deves substituir pelo teu no ficheiro components/GoogleDriveBridge.tsx para que a sincronização funcione no teu site.");
-    }
-
     setIsConnecting(true);
     try {
       const client = (window as any).google.accounts.oauth2.initTokenClient({
@@ -43,7 +39,7 @@ export const GoogleDriveBridge: React.FC<GoogleDriveBridgeProps> = ({ config, on
     } catch (e) {
       console.error("Google Auth failed", e);
       setIsConnecting(false);
-      alert("Falha na ligação. Verifique se o URL da app está autorizado no Google Cloud Console.");
+      alert("Falha na ligação. Verifique se o URL da app está autorizado no Google Cloud Console (Authorized JavaScript Origins).");
     }
   };
 
@@ -63,7 +59,7 @@ export const GoogleDriveBridge: React.FC<GoogleDriveBridgeProps> = ({ config, on
               Motor IA: {isIAEnabled ? 'Gemini 3 Flash Ativo' : 'IA Desativada'}
             </h3>
             <p className={`text-[10px] font-bold uppercase tracking-widest mt-1 ${isIAEnabled ? 'text-indigo-100' : 'text-slate-400'}`}>
-              {isIAEnabled ? 'Extração automática de faturas disponível' : 'Falta configurar a API_KEY nas variáveis de ambiente'}
+              {isIAEnabled ? 'Extração automática de faturas disponível' : 'Falta configurar a API_KEY nas variáveis de ambiente do Vercel'}
             </p>
           </div>
         </div>
@@ -99,7 +95,7 @@ export const GoogleDriveBridge: React.FC<GoogleDriveBridgeProps> = ({ config, on
             onClick={() => setShowSetupGuide(!showSetupGuide)}
             className="flex items-center gap-3 px-6 py-4 bg-indigo-50 text-indigo-600 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-indigo-100 transition-all border border-indigo-100"
           >
-            <BookOpen size={18}/> {showSetupGuide ? 'Fechar Ajuda' : 'Como configurar a Chave?'}
+            <BookOpen size={18}/> {showSetupGuide ? 'Fechar Ajuda' : 'URLs Autorizados?'}
           </button>
         </div>
 
@@ -107,13 +103,13 @@ export const GoogleDriveBridge: React.FC<GoogleDriveBridgeProps> = ({ config, on
           <div className="mb-16 p-10 bg-slate-50 rounded-[40px] border border-slate-200 space-y-10 animate-in slide-in-from-top-4 duration-500">
             <h3 className="text-xl font-black text-slate-900 uppercase tracking-tight flex items-center gap-3">
               <div className="w-8 h-8 bg-slate-900 text-white rounded-lg flex items-center justify-center text-sm">!</div>
-              Onde colocar o Client ID?
+              Configuração Obrigatória no Google
             </h3>
             <p className="text-sm font-medium text-slate-600 leading-relaxed">
-              Depois de gerar o ID no Google Cloud, deves abrir o ficheiro <code className="bg-white px-2 py-1 rounded border">components/GoogleDriveBridge.tsx</code> e procurar a linha que diz <code className="text-indigo-600 font-bold">GOOGLE_CLIENT_ID = '...'</code>. Substitui o valor entre aspas pelo teu ID.
+              Para o botão "Ligar" funcionar, deve ir ao Google Cloud Console e adicionar este domínio à lista de <b>Authorized JavaScript Origins</b>. Se não o fizer, o Google bloqueará a ligação por segurança.
             </p>
             <div className="p-6 bg-amber-50 rounded-2xl border border-amber-100 text-[11px] font-bold text-amber-800 leading-relaxed">
-              DICA: Se não o fizeres, a ligação funcionará apenas no meu ambiente de teste, mas falhará quando publicares o teu próprio site.
+              DICA: Não se esqueça de adicionar tanto o link do Vercel como o <code className="bg-white px-1 font-mono">http://localhost:5173</code>.
             </div>
           </div>
         )}
@@ -121,7 +117,7 @@ export const GoogleDriveBridge: React.FC<GoogleDriveBridgeProps> = ({ config, on
         {!config.isEnabled ? (
           <div className="space-y-10 max-w-2xl relative z-10">
             <p className="text-slate-500 text-lg leading-relaxed font-medium">
-              Conecte o seu telemóvel ao seu PC. Os dados que carregar no PC via Excel serão lidos instantaneamente no telemóvel assim que abrir a app.
+              Conecte a sua conta para sincronizar dados entre o Excel no PC e o BalanceMaster no telemóvel via nuvem segura.
             </p>
             <button 
               onClick={handleConnect}
@@ -141,7 +137,7 @@ export const GoogleDriveBridge: React.FC<GoogleDriveBridgeProps> = ({ config, on
                 </div>
                 <div>
                   <p className="text-lg font-black text-indigo-900">Sincronização Ativa</p>
-                  <p className="text-xs font-bold text-indigo-400 uppercase tracking-widest mt-1">Lido do Drive em cada refresh</p>
+                  <p className="text-xs font-bold text-indigo-400 uppercase tracking-widest mt-1">Ligado via Google OAuth</p>
                 </div>
               </div>
               <button 
@@ -150,17 +146,6 @@ export const GoogleDriveBridge: React.FC<GoogleDriveBridgeProps> = ({ config, on
               >
                 Interromper Conexão
               </button>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-               <div className="p-8 bg-white rounded-[40px] border border-slate-100">
-                  <h4 className="font-black text-slate-900 text-xs uppercase tracking-widest mb-4">Fluxo de Dados</h4>
-                  <ul className="space-y-4 text-xs font-bold text-slate-400 uppercase tracking-tighter">
-                    <li className="flex items-center gap-3"><div className="w-1.5 h-1.5 rounded-full bg-indigo-600"></div> Excel exporta JSON para o Drive</li>
-                    <li className="flex items-center gap-3"><div className="w-1.5 h-1.5 rounded-full bg-indigo-600"></div> App lê o JSON no arranque</li>
-                    <li className="flex items-center gap-3"><div className="w-1.5 h-1.5 rounded-full bg-indigo-600"></div> Dashboard atualiza automático</li>
-                  </ul>
-               </div>
             </div>
           </div>
         )}
