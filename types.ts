@@ -23,7 +23,6 @@ export interface Budget {
   sphere: Sphere;
 }
 
-// Added missing Category interface
 export interface Category {
   id: string;
   name: string;
@@ -33,12 +32,12 @@ export interface GoogleDriveConfig {
   isEnabled: boolean;
   accessToken: string;
   expiresAt: number;
+  clientId?: string;
+  businessFileId?: string;
+  personalFileId?: string;
   userEmail?: string;
-  dbFileId?: string;
-  folderId?: string;
 }
 
-// Added missing TelegramConfig interface
 export interface TelegramConfig {
   isEnabled: boolean;
   botToken: string;
